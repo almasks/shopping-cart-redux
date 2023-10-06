@@ -1,22 +1,31 @@
-import React, { useEffect } from 'react'
-import Products from '../Components/Products'
-import { useSelector ,useDispatch} from 'react-redux'
-import { fetchProducts } from '../store.js/products/productActions'
+import React, { useEffect, useMemo } from "react";
+import Products from "../Components/Products";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProducts } from "../store.js/products/productActions";
 
+function Home({ searchInput }) {
+  const products = useSelector((state) => state.product.productList);
 
-function Home() {
-  const products= useSelector(state=>state.productList)
+  const searchByTitle = useMemo(() => {
+    if (searchInput) {
+      return products.filter(product => product.title.toLowerCase().startsWith(searchInput))
+    }
+    else {
+      return products
+    }
 
-  const dispatch=useDispatch()
-  useEffect(()=>{
-    dispatch(fetchProducts())
-  },[])
+  }, [searchInput])
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, []);
   return (
     <div>
-    
-    <Products products={products}/>
+      {products.length > 0 && (
+        <Products products={searchByTitle} dispatch={dispatch} searchInput={searchInput} />
+      )}
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;
